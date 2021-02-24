@@ -1,2 +1,2 @@
 # Flappy Birb
-Written in Python and I still have no ducking Idea what I am doing.
+Written in Python and I still have no ducking idea what I am doing.
