@@ -33,6 +33,7 @@ def check_collision(pipes):
 			return False
 
 	if bird_rect.top <= -100 or bird_rect.bottom >= 450:
+		death_sound.play()
 		can_score = True
 		return False
 
@@ -78,13 +79,27 @@ def pipe_score_check():
 			if pipe.centerx < 0:
 				can_score = True
 
-def audio_mute():
-	pygame.mixer.music.set_volume(0.0)
+def audio_mute(sound_volume):
+	for s in sounds:
+		s.set_volume(sound_volume)
+
+def audio_sound(sound_volume):
+	for s in sounds:
+		s.set_volume(sound_volume)
+
+def mute_button(surface):
+	muterect = mute.get_rect()
+	notmuterect = notmute.get_rect()
+	muterect.topright = 250,0
+	notmuterect.topright = 250,0
+	surface.blit(mute,muterect)
+	return mute, muterect
 
 
-#pygame.mixer.pre_init(frequency = 44100, size = 16, channels = 2, buffer = 1024)
 pygame.init()
 pygame.display.set_caption("Flappy Birb")
+gameIcon = pygame.image.load('assets/bluebird-midflap.png')
+pygame.display.set_icon(gameIcon)
 screen = pygame.display.set_mode((288,512))
 clock = pygame.time.Clock()
 game_font = pygame.font.Font('04B_19.TTF',40)
@@ -109,15 +124,11 @@ bird_index = 0
 bird_surface = bird_frames[bird_index]
 bird_rect = bird_surface.get_rect(center = (50,256))
 
-mute_audio = pygame.image.load('assets/audio-mute.png').convert_alpha()
-sound_audio = pygame.image.load('assets/audio-sound.png').convert_alpha()
+mute = pygame.image.load('assets/audio-mute.png').convert_alpha()
+notmute = pygame.image.load('assets/audio-sound.png').convert_alpha()
 
 BIRDFLAP = pygame.USEREVENT + 1
 pygame.time.set_timer(BIRDFLAP,200)
-
-# bird_surface = pygame.image.load('assets/bluebird-midflap.png').convert_alpha()
-# bird_surface = pygame.transform.scale2x(bird_surface)
-# bird_rect = bird_surface.get_rect(center = (100,512))
 
 pipe_surface = pygame.image.load('assets/pipe-green.png')
 pipe_list = []
@@ -128,12 +139,16 @@ pipe_height = [200,250,300,350,400]
 game_over_surface = pygame.image.load('assets/message.png').convert_alpha()
 game_over_rect = game_over_surface.get_rect(center = (144,256))
 
-flap_sound = pygame.mixer.Sound('sound/sfx_wing.wav')
-death_sound = pygame.mixer.Sound('sound/sfx_hit.wav')
-score_sound = pygame.mixer.Sound('sound/sfx_point.wav')
+flap_sound = pygame.mixer.Sound('sounds/sfx_wing.wav')
+death_sound = pygame.mixer.Sound('sounds/sfx_hit.wav')
+score_sound = pygame.mixer.Sound('sounds/sfx_point.wav')
+sounds = [flap_sound,death_sound,score_sound]
 score_sound_countdown = 100
 SCOREEVENT = pygame.USEREVENT + 2
 pygame.time.set_timer(SCOREEVENT,100)
+for s in sounds:
+	s.set_volume(0.1)
+
 
 while True:
 	for event in pygame.event.get():
@@ -185,16 +200,11 @@ while True:
 		high_score = update_score(score,high_score)
 		score_display('game_over')
 
-
 	# Floor
 	floor_x_pos -= 1
 	draw_floor()
 	if floor_x_pos <= -288:
 		floor_x_pos = 0
-
-
-	# Sound
-
 
 	pygame.display.update()
 	clock.tick(120)
