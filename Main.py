@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, random, sys
 
 def draw_floor():
 	screen.blit(floor_surface,(floor_x_pos,450))
@@ -87,13 +87,13 @@ def audio_sound(sound_volume):
 	for s in sounds:
 		s.set_volume(sound_volume)
 
-def mute_button(surface):
-	muterect = mute.get_rect()
-	notmuterect = notmute.get_rect()
-	muterect.topright = 250,0
-	notmuterect.topright = 250,0
-	surface.blit(mute,muterect)
-	return mute, muterect
+def sound_button():
+	if event.key == pygame.K_m:
+		if s == 0.1:
+			s.set_volume(0)
+		elif s == 0:
+			s.set_volume(0.1)
+
 
 
 pygame.init()
@@ -105,7 +105,7 @@ clock = pygame.time.Clock()
 game_font = pygame.font.Font('04B_19.TTF',40)
 
 # Game Variables
-gravity = 0.125
+gravity = 0.120
 bird_movement = 0
 game_active = True
 score = 0
@@ -124,9 +124,6 @@ bird_index = 0
 bird_surface = bird_frames[bird_index]
 bird_rect = bird_surface.get_rect(center = (50,256))
 
-mute = pygame.image.load('assets/audio-mute.png').convert_alpha()
-notmute = pygame.image.load('assets/audio-sound.png').convert_alpha()
-
 BIRDFLAP = pygame.USEREVENT + 1
 pygame.time.set_timer(BIRDFLAP,200)
 
@@ -134,7 +131,7 @@ pipe_surface = pygame.image.load('assets/pipe-green.png')
 pipe_list = []
 SPAWNPIPE = pygame.USEREVENT
 pygame.time.set_timer(SPAWNPIPE,1200)
-pipe_height = [200,250,300,350,400]
+pipe_height = [200,225,250,275,300,325,350,400]
 
 game_over_surface = pygame.image.load('assets/message.png').convert_alpha()
 game_over_rect = game_over_surface.get_rect(center = (144,256))
@@ -158,7 +155,7 @@ while True:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_SPACE and game_active:
 				bird_movement = 0
-				bird_movement -= 4.5
+				bird_movement -= 4
 				flap_sound.play()
 			if event.key == pygame.K_SPACE and game_active == False:
 				game_active = True
